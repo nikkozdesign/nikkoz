@@ -1,0 +1,6 @@
+@use "sass:math";
+
+// vw(20) → 20px at 1920 design width, scales with viewport
+@function vw($px, $base: 1920) {
+  @return math.div($px, $base) * 100vw;
+}
