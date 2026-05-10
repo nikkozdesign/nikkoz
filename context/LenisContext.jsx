@@ -1,7 +1,10 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import Lenis from "lenis";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-// Create the Lenis context
+gsap.registerPlugin(ScrollTrigger);
+
 const LenisContext = createContext();
 
 export function useLenis() {
@@ -15,14 +18,14 @@ export function LenisProvider({ children }) {
     const instance = new Lenis();
     setLenis(instance);
 
-    function raf(time) {
-      instance.raf(time);
-      requestAnimationFrame(raf);
-    }
+    instance.on("scroll", ScrollTrigger.update);
 
-    requestAnimationFrame(raf);
+    const update = (time) => instance.raf(time * 1000);
+    gsap.ticker.add(update);
+    gsap.ticker.lagSmoothing(0);
 
     return () => {
+      gsap.ticker.remove(update);
       instance.destroy();
     };
   }, []);

@@ -8,7 +8,7 @@ const nextConfig = {
   reactStrictMode: true,
   sassOptions: {
     loadPaths: [path.join(__dirname, "styles")],
-    additionalData: `@use "functions" as *;`,
+    additionalData: `@use "functions" as *; @use "typography" as *; @use "colors" as *;`,
   },
 };
 

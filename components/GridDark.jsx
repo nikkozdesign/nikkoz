@@ -1,7 +1,7 @@
-import styles from "./GridLight.module.scss";
+import styles from "./GridDark.module.scss";
 import GridSvg from "./GridSvg";
 
-export default function GridLight() {
+export default function GridDark() {
   return (
     <div className={styles.grid}>
       <GridSvg />

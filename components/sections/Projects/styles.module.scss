@@ -1,0 +1,219 @@
+// ---- Section ----
+
+.projects {
+  position: relative;
+  z-index: 7;
+  width: 100vw;
+  margin-top: -100vh;
+  background-color: $light-color;
+}
+
+.projects__camera {
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+}
+
+.projects__container {
+  display: flex;
+  width: fit-content;
+  flex-wrap: nowrap;
+}
+
+.projects__item {
+  min-width: 100vw;
+  height: 100vh;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.projects__item_last {}
+
+@media (max-width: 768px) {
+  .projects {
+    width: auto;
+    height: auto;
+    margin-top: -40dvh;
+    overflow: hidden;
+  }
+
+  .projects__camera {
+    overflow: visible;
+    width: 100vw;
+    height: auto;
+  }
+
+  .projects__container {
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+
+  .projects__item {
+    min-width: 100vw;
+    width: 100vw;
+    height: auto;
+    margin-bottom: vwm(120);
+    overflow: visible;
+  }
+}
+
+// ---- Project card ----
+
+.project_card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  isolation: isolate;
+}
+
+.project_card_meta {
+  display: flex;
+  flex-direction: column;
+  gap: vw(16);
+}
+
+.project_card_meta__title {
+  opacity: 0.4;
+  display: flex;
+  align-items: center;
+  gap: vw(2);
+}
+
+.project_card_meta__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: vw(2);
+}
+
+.project_card_meta__text {
+  display: block;
+}
+
+.project_card__bottom_line {
+  display: flex;
+  align-items: center;
+  margin-top: vw(-37);
+  position: relative;
+  z-index: 1;
+}
+
+.project_card__top_line {
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+.project_card__name {
+  display: block;
+}
+
+.project_card__cover {
+  position: absolute;
+  width: vw(532);
+  height: vw(650);
+  border-radius: vw(20);
+  overflow: hidden;
+  z-index: 1;
+}
+
+.project_card__video {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+// ---- Per-project layout ----
+
+// Zara
+.project_card__top_line_zara {
+  margin-left: vw(453);
+}
+.project_card__bottom_line_zara {
+  gap: vw(16);
+  margin-left: vw(453);
+}
+
+// Xerox
+.project_card__top_line_xerox {
+  margin-left: vw(386);
+}
+.project_card__bottom_line_xerox {
+  gap: vw(16);
+  margin-left: vw(453);
+}
+
+// Volvo
+.project_card__top_line_volvo {
+  margin-left: vw(453);
+}
+.project_card__bottom_line_volvo {
+  margin-left: vw(523);
+  gap: vw(38);
+}
+
+// Sephora
+.project_card__bottom_line_sephora {
+  flex-direction: column-reverse;
+  gap: vw(57);
+  margin-top: 6.5vw;
+}
+
+@media (max-width: 768px) {
+  .project_card {
+    justify-content: center;
+    width: 100vw;
+    align-items: center;
+    height: auto;
+    padding-top: 20vh;
+  }
+
+  .project_card__bottom_line {
+    flex-direction: column-reverse;
+  }
+
+  .project_card__bottom_line_zara,
+  .project_card__bottom_line_xerox,
+  .project_card__bottom_line_volvo,
+  .project_card__bottom_line_sephora {
+    gap: vwm(60);
+    margin-left: 0;
+    text-align: center;
+  }
+
+  .project_card__top_line_zara,
+  .project_card__top_line_xerox,
+  .project_card__top_line_volvo {
+    margin-left: 0;
+    text-align: center;
+  }
+
+  .project_card__name {
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .project_card_meta {
+    position: relative;
+    z-index: 2;
+  }
+
+  .project_card_meta__text,
+  .project_card_meta__title :global(.geist-16) {
+    font-size: 2.8vw;
+  }
+
+  .project_card__cover {
+    width: vwm(194);
+    height: vwm(238);
+    border-radius: vwm(20);
+    z-index: 1;
+    transform: translate3d(100vw, -25%, 0) rotate(-40deg);
+  }
+}

@@ -1,0 +1,23 @@
+.grid {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: vw(20);
+  padding: 0 vw(40);
+}
+
+.col {
+  background: rgba(255, 0, 120, 0.12);
+  outline: 1px solid rgba(255, 0, 120, 0.25);
+  height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .grid {
+    gap: vwm(8);
+    padding: 0 vwm(12);
+  }
+}

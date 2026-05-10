@@ -3,4 +3,152 @@
 *::after {
   box-sizing: border-box;
 }
+* {
+  margin: 0;
+  padding: 0;
+}
 
+// ---- Layout primitive ----
+
+.grid-layout {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: vw(20);
+  padding: 0 vw(40);
+}
+
+.grid-layout_2-row {
+  grid-template-rows: auto auto;
+}
+
+@media (max-width: 768px) {
+  .grid-layout {
+    gap: vwm(8);
+    padding: 0 vwm(12);
+  }
+}
+
+// ---- Responsive visibility ----
+
+.desktop-only { display: contents; }
+.mobile-only  { display: none; }
+
+@media (max-width: 768px) {
+  .desktop-only { display: none; }
+  .mobile-only  { display: contents; }
+}
+
+// ---- Spacers ----
+
+.space-25 { height: vw(25); }
+.space-50 { height: vw(50); }
+.space-100 { height: vw(100); }
+
+@media (max-width: 768px) {
+  .space-25 { height: vwm(20); }
+  .space-50 { height: vwm(30); }
+  .space-100 { height: vwm(60); }
+}
+
+// ---- Transforms ----
+
+.uppercase { text-transform: uppercase; }
+.italic { font-style: italic; }
+.center { text-align: center; }
+.right { text-align: right; }
+.indent-600 { text-indent: vw(600); }
+.indent-110 { text-indent: vw(110); }
+
+@media (max-width: 768px) {
+  .indent-600 { text-indent: vwm(123); }
+  .indent-110 { text-indent: vwm(50); }
+}
+
+// ---- Color utilities ----
+
+.dark { color: $dark-color; }
+.light { color: $light-color; }
+
+// ---- Geist ----
+
+.geist-16,
+.geist-18,
+.geist-21,
+.geist-22,
+.geist-25,
+.geist-32,
+.geist-82,
+.geist-200 {
+  font-family: $geist;
+  letter-spacing: -0.04em;
+  font-feature-settings: 'ss01' on, 'ss03' on;
+}
+
+.geist-16 { font-size: vw(16); line-height: 90%; }
+.geist-18 { font-size: vw(18); line-height: 90%; }
+.geist-21 { font-size: vw(21); line-height: 100%; }
+.geist-22 { font-size: vw(22); line-height: 110%; }
+.geist-25 { font-size: vw(25); line-height: 90%; font-weight: 400; }
+.geist-32 { font-size: vw(32); line-height: 120%; }
+.geist-82 { font-size: vw(82); line-height: 85%; font-variation-settings: 'wght' 350; }
+.geist-200 { font-size: vw(200); line-height: 90%; font-weight: 400; }
+
+// ---- Sigurd ----
+
+.sigurd-22,
+.sigurd-32,
+.sigurd-36,
+.sigurd-46,
+.sigurd-62,
+.sigurd-92,
+.sigurd-102,
+.sigurd-142,
+.sigurd-200,
+.sigurd-212,
+.sigurd-220,
+.sigurd-388,
+.sigurd-410 {
+  font-family: $sigurd;
+  letter-spacing: -0.04em;
+  font-weight: 300;
+  line-height: 90%;
+}
+
+.sigurd-22  { font-size: vw(22); }
+.sigurd-32  { font-size: vw(32); }
+.sigurd-36  { font-size: vw(36); }
+.sigurd-46  { font-size: vw(46); }
+.sigurd-62  { font-size: vw(62); }
+.sigurd-92  { font-size: vw(92); line-height: 85%; }
+.sigurd-102 { font-size: vw(101); line-height: 110%; }
+.sigurd-142 { font-size: vw(120); line-height: 110%; }
+.sigurd-200 { font-size: vw(200); }
+.sigurd-212 { font-size: vw(212); }
+.sigurd-220 { font-size: vw(220); }
+.sigurd-388 { font-size: vw(388); font-style: italic; }
+.sigurd-410 { font-size: vw(410); }
+
+// ---- Mobile typography ----
+
+@media (max-width: 768px) {
+  .geist-16  { font-size: vwm(15); line-height: 120%; }
+  .geist-18  { font-size: vwm(15); }
+  .geist-21  { font-size: vwm(16); }
+  .geist-22  { font-size: vwm(14); }
+  .geist-25  { font-size: vwm(16); line-height: 120%; }
+  .geist-32  { font-size: vwm(14); line-height: 120%; }
+  .geist-82  { font-size: vwm(28); line-height: 90%; }
+  .geist-200 { font-size: vwm(77); line-height: 90%; }
+
+  .sigurd-22  { font-size: vwm(13); }
+  .sigurd-32  { font-size: vwm(24); }
+  .sigurd-36  { font-size: vwm(25); }
+  .sigurd-46  { font-size: vwm(34); }
+  .sigurd-92  { font-size: vwm(34); line-height: 85%; }
+  .sigurd-102 { font-size: vwm(29); }
+  .sigurd-142 { font-size: vwm(41); }
+  .sigurd-200 { font-size: vwm(77); }
+  .sigurd-212 { font-size: vwm(62); line-height: 80%; }
+  .sigurd-388 { font-size: vwm(130); }
+  .sigurd-410 { font-size: vwm(77); }
+}

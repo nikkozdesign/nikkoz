@@ -1,0 +1,166 @@
+.process {
+  position: relative;
+  z-index: 7;
+  margin-top: 0;
+  margin-bottom: 70vh;
+}
+
+.process_title {
+  height: 100vh;
+  width: vw(1840);
+  display: flex;
+  margin-right: auto;
+  margin-left: auto;
+  flex-direction: row;
+  align-items: center;
+  position: relative;
+  justify-content: center;
+  z-index: 2;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+    background-color: $light-color;
+    z-index: -1;
+    border-radius: inherit;
+  }
+}
+
+.process_title__heading {
+  display: flex;
+  flex-direction: column;
+  gap: vw(45);
+  align-items: center;
+  justify-content: center;
+}
+
+.section_name__wraper_process {
+  justify-content: center;
+  align-items: center;
+}
+
+.section_name_process {
+  display: flex;
+  gap: vw(7);
+  align-items: center;
+}
+
+.process_title__skobka_left {
+  width: vw(101);
+  height: vw(607);
+  left: 0;
+  position: absolute;
+
+  :global(path) {
+    stroke: $dark-color;
+  }
+}
+
+.process_title__skobka_right {
+  width: vw(101);
+  height: vw(607);
+  right: 0;
+  position: absolute;
+
+  :global(path) {
+    stroke: $dark-color;
+  }
+}
+
+.process_title__title {
+  margin-bottom: vw(80);
+}
+
+.process_content {
+  padding-top: 20vh;
+  padding-bottom: 20vh;
+  position: relative;
+  z-index: 3;
+}
+
+.process_content__left {
+  grid-column: 1 / 2;
+  position: relative;
+}
+
+.process_content__center {
+  grid-column: 3 / 6;
+}
+
+.process_content__right {
+  grid-column: 6 / 7;
+  position: relative;
+}
+
+.process_content__list_item {
+  list-style: none;
+}
+
+.process_content__text {
+  position: sticky;
+  top: 50%;
+}
+
+@media (max-width: 768px) {
+  .process {
+    margin-top: 0;
+  }
+
+  .process_title__skobka_left,
+  .process_title__skobka_right {
+    display: none;
+  }
+
+  .process_title {
+    position: relative;
+    z-index: 2;
+    height: auto;
+    padding-top: vwm(100);
+    width: 100vw;
+  }
+
+  .section_name_process :global(.geist-25),
+  .section_name_process :global(.sigurd-36),
+  .process_title__title {
+    color: $light-color;
+  }
+
+  .process_title::before {
+    display: none;
+  }
+
+  .process_title__heading {
+    gap: vwm(26);
+  }
+
+  .section_name_process {
+    gap: vwm(4);
+  }
+
+  .process_content__left,
+  .process_content__right {
+    display: none;
+  }
+
+  .process_content__center {
+    grid-column: 1 / 7;
+  }
+
+  .process_content__list_second {
+    margin-top: vwm(20);
+    text-align: right;
+  }
+
+  .process_content__list_third {
+    margin-top: vwm(20);
+  }
+
+  .process_content {
+    padding-top: vwm(20);
+    padding-bottom: vwm(20);
+  }
+}

@@ -1,10 +1,16 @@
+import About from "../components/sections/About";
+import TypesOfWork from "../components/sections/TypesOfWork";
+import Projects from "../components/sections/Projects";
+import Process from "../components/sections/Process";
+
 export default function Home() {
   return (
     <main>
-      <section style={{ height: "100vh" }} />
-      <section style={{ height: "100vh", padding: "100px 24px" }}>
-        <h2>scroll target</h2>
-      </section>
+      <div style={{ height: "100vh" }} />
+      <About />
+      <TypesOfWork />
+      <Projects />
+      <Process />
     </main>
   );
 }

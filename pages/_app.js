@@ -3,8 +3,10 @@ import { useRouter } from "next/router";
 import { AnimatePresence, motion } from "framer-motion";
 import ShaderBackground from "@/components/ShaderBackground";
 import GridLight from "@/components/GridLight";
+import GridDark from "@/components/GridDark";
 import Header from "@/components/Header";
 import TransitionOverlay from "@/components/TransitionOverlay";
+import DesignGrid from "@/components/DesignGrid";
 import { ShaderPaletteProvider } from "@/context/ShaderPaletteContext";
 import { LenisProvider } from "@/context/LenisContext";
 import { ScrollProvider } from "@/context/ScrollContext";
@@ -41,9 +43,11 @@ export default function App({ Component, pageProps }) {
           <ShaderPaletteProvider>
             <ShaderBackground />
             <GridLight />
+            <GridDark />
             <Header />
             <AnimatedRoutes Component={Component} pageProps={pageProps} />
             <TransitionOverlay />
+            <DesignGrid />
           </ShaderPaletteProvider>
         </ScrollProvider>
       </TransitionProvider>
