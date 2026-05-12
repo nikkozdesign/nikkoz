@@ -1,0 +1,25 @@
+.flip_link {
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.flip_link__top,
+.flip_link__bottom {
+  display: block;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.flip_link__bottom {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.flip_link__char {
+  display: inline-block;
+  position: relative;
+}

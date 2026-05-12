@@ -1,0 +1,29 @@
+.carousel {
+  display: flex;
+  flex-direction: column;
+  gap: vw(40);
+  width: 100%;
+}
+
+.carousel__item {
+  width: 100%;
+  overflow: hidden;
+  border-radius: vw(20);
+  will-change: transform;
+}
+
+.carousel__img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (max-width: 768px) {
+  .carousel {
+    gap: vwm(20);
+  }
+
+  .carousel__item {
+    border-radius: vwm(14);
+  }
+}

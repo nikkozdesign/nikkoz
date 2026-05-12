@@ -1,0 +1,199 @@
+.playground {
+  position: relative;
+  z-index: 8;
+}
+
+.playground__wrap {
+  position: relative;
+  z-index: 2;
+  background-color: $light-color;
+  padding-bottom: vw(100);
+  border-radius: 24px;
+  will-change: transform;
+}
+
+.playground_title {
+  height: 100vh;
+  width: vw(1840);
+  display: flex;
+  margin-right: auto;
+  margin-left: auto;
+  flex-direction: row;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  justify-content: center;
+  z-index: 10;
+  mix-blend-mode: difference;
+}
+
+.playground_title__heading {
+  display: flex;
+  flex-direction: column;
+  gap: vw(30);
+  align-items: center;
+  justify-content: center;
+  margin-bottom: vw(-30);
+}
+
+.playground_decription {
+  width: vw(510);
+  text-align: center;
+  align-self: flex-end;
+  margin-right: vw(110);
+  margin-top: vw(-25);
+}
+
+.playground_title__skobka_left {
+  width: vw(101);
+  height: vw(607);
+  left: 0;
+  position: absolute;
+
+  :global(path) {
+    stroke: $light-color;
+  }
+}
+
+.playground_title__skobka_right {
+  width: vw(101);
+  height: vw(607);
+  right: 0;
+  position: absolute;
+
+  :global(path) {
+    stroke: $light-color;
+  }
+}
+
+.section_name__wraper_process {
+  justify-content: center;
+  align-items: center;
+}
+
+.section_name_process {
+  display: flex;
+  gap: vw(7);
+  align-items: center;
+}
+
+// Images
+
+.playground__imgs {
+  width: 100%;
+  overflow: hidden;
+}
+
+.playground__img {
+  height: auto;
+  width: vw(700);
+  position: relative;
+  display: block;
+  will-change: transform;
+  overflow: hidden;
+  border-radius: vw(20);
+}
+
+.playground__img_1  { margin-left: vw(-60); }
+.playground__img_2  { margin-left: vw(1180); margin-top: vw(-260); }
+.playground__img_3  { margin-left: vw(960);  margin-top: vw(-100); }
+.playground__img_4  { margin-left: vw(40);   margin-top: vw(-150); z-index: 2; }
+.playground__img_5  { margin-left: vw(640);  margin-top: 0; }
+.playground__img_6  { margin-left: vw(960);  margin-top: vw(-100); z-index: 2; }
+.playground__img_7  { margin-left: vw(580);  margin-top: vw(100);  z-index: 3; }
+.playground__img_8  { margin-left: vw(40);   margin-top: vw(-100); }
+.playground__img_9  { margin-left: vw(1280); margin-top: vw(-100); }
+.playground__img_10 { margin-left: vw(900);  margin-top: vw(100); }
+.playground__img_11 { margin-left: vw(1180); margin-top: vw(-100); z-index: 4; }
+.playground__img_12 { margin-left: vw(320);  margin-top: vw(-50);  z-index: 4; }
+.playground__img_13 { margin-left: vw(615);  margin-top: vw(50); }
+.playground__img_14 { margin-left: vw(40);   margin-top: vw(-100); z-index: 4; }
+.playground__img_15 { margin-left: vw(960);  margin-top: vw(-150); z-index: 4; }
+.playground__img_16 { margin-left: vw(640);  margin-top: vw(10);   z-index: 3; }
+.playground__img_17 { margin-left: vw(1280); margin-top: vw(-100); z-index: 4; }
+
+@media (max-width: 768px) {
+  .playground_decription {
+    display: none;
+  }
+
+  .playground_title__skobka_right,
+  .playground_title__skobka_left {
+    width: vwm(35);
+    height: vwm(216);
+  }
+
+  .playground_title__heading {
+    gap: vwm(20);
+  }
+
+  .playground_title__title {
+    margin-bottom: 11vw;
+  }
+
+  .playground_title {
+    width: vwm(369);
+  }
+
+  .playground__imgs {
+    width: vwm(369);
+    display: flex;
+    flex-direction: column;
+    gap: vwm(8);
+    margin: 0 auto;
+  }
+
+  .playground__img {
+    border-radius: vwm(14);
+  }
+
+  .playground__img_1,
+  .playground__img_2,
+  .playground__img_3,
+  .playground__img_5,
+  .playground__img_6,
+  .playground__img_7,
+  .playground__img_9,
+  .playground__img_12,
+  .playground__img_13,
+  .playground__img_14,
+  .playground__img_15,
+  .playground__img_16,
+  .playground__img_17 {
+    width: vwm(246);
+    margin-top: 0;
+  }
+
+  .playground__img_4,
+  .playground__img_8,
+  .playground__img_10,
+  .playground__img_11 {
+    width: vwm(369);
+    margin-left: 0;
+    margin-top: 0;
+  }
+
+  .playground__img_1,
+  .playground__img_3,
+  .playground__img_6,
+  .playground__img_7,
+  .playground__img_12,
+  .playground__img_13,
+  .playground__img_16 {
+    margin-left: 0;
+  }
+
+  .playground__img_2,
+  .playground__img_5,
+  .playground__img_9,
+  .playground__img_14,
+  .playground__img_15,
+  .playground__img_17 {
+    margin-left: auto;
+  }
+
+  .playground__wrap {
+    padding-bottom: vwm(16);
+    border-radius: vwm(20);
+  }
+}

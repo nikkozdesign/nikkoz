@@ -1,7 +1,8 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useProjectCovers } from "@/context/ProjectCoversContext";
 import styles from "./styles.module.scss";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
@@ -33,6 +34,18 @@ export default function ProjectCard({
 }) {
   const cardRef = useRef(null);
   const coverRef = useRef(null);
+
+  const projectCovers = useProjectCovers();
+
+  useEffect(() => {
+    if (!projectCovers || !coverRef.current) return;
+    const unregister = projectCovers.registerCover({
+      id: modifier,
+      src: cover,
+      element: coverRef.current,
+    });
+    return unregister;
+  }, [projectCovers, modifier, cover]);
 
   useGSAP(
     () => {

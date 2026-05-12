@@ -186,7 +186,11 @@ export default function About() {
           <Ampersand />
         </Parallax>
         <Parallax className={styles.about__text_extrasmall} speed={-2.5}>
-          <PerLine value={TEXT_EXTRASMALL} className="geist-32 dark" />
+          <PerLine
+            value={TEXT_EXTRASMALL}
+            className="geist-32 dark"
+            offset={["start 1.5", "start 0.6"]}
+          />
         </Parallax>
       </div>
     </section>

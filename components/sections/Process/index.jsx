@@ -9,28 +9,27 @@ import styles from "./styles.module.scss";
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const DISCOVERY_ITEMS = [
-  "competitors analysis,",
-  "stakeholder interview,",
-  "strategy,",
-  "user testing,",
-  "information architecture,",
+  "understand the space,",
+  "find what's broken,",
+  "talk to the right people,",
+  "map the territory,",
+  "define what success looks like,",
 ];
 
 const DESIGN_ITEMS = [
-  "wireframing,",
-  "moodboarding,",
-  "prototyping,",
-  "visual design,",
-  "interaction design,",
-  "design review,",
+  "make it ugly first,",
+  "then make it right,",
+  "then make it beautiful,",
+  "test it on someone who doesn't care about design,",
+  "do it again,",
 ];
 
 const DEV_ITEMS = [
-  "webflow development,",
-  "user testing,",
-  "iteration,",
-  "testing,",
-  "launch,",
+  "write code that reads like design,",
+  "animate with intention,",
+  "ship something real,",
+  "watch people use it,",
+  "fix what breaks.",
 ];
 
 export default function Process() {

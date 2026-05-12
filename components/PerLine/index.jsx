@@ -1,11 +1,11 @@
 import { useRef } from "react";
 import { useScroll, motion, useTransform } from "framer-motion";
 
-export default function PerLine({ value, className }) {
+export default function PerLine({ value, className, offset }) {
   const element = useRef(null);
   const { scrollYProgress } = useScroll({
     target: element,
-    offset: ["start 0.9", "start 0.25"],
+    offset: offset || ["start 0.9", "start 0.25"],
   });
 
   const lines = value.split("\n");

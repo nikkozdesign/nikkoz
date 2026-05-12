@@ -1,4 +1,5 @@
 import "@/styles/globals.scss";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { AnimatePresence, motion } from "framer-motion";
 import ShaderBackground from "@/components/ShaderBackground";
@@ -14,6 +15,12 @@ import {
   TransitionProvider,
   useTransition,
 } from "@/context/TransitionContext";
+import { ProjectCoversProvider } from "@/context/ProjectCoversContext";
+
+const ProjectCoversCanvas = dynamic(
+  () => import("@/components/ProjectCoversCanvas"),
+  { ssr: false }
+);
 
 function AnimatedRoutes({ Component, pageProps }) {
   const router = useRouter();
@@ -41,13 +48,16 @@ export default function App({ Component, pageProps }) {
       <TransitionProvider>
         <ScrollProvider>
           <ShaderPaletteProvider>
-            <ShaderBackground />
-            <GridLight />
-            <GridDark />
-            <Header />
-            <AnimatedRoutes Component={Component} pageProps={pageProps} />
-            <TransitionOverlay />
-            <DesignGrid />
+            <ProjectCoversProvider>
+              <ShaderBackground />
+              <GridLight />
+              <GridDark />
+              <Header />
+              <AnimatedRoutes Component={Component} pageProps={pageProps} />
+              <ProjectCoversCanvas />
+              <TransitionOverlay />
+              <DesignGrid />
+            </ProjectCoversProvider>
           </ShaderPaletteProvider>
         </ScrollProvider>
       </TransitionProvider>

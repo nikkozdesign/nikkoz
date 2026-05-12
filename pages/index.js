@@ -2,6 +2,8 @@ import About from "../components/sections/About";
 import TypesOfWork from "../components/sections/TypesOfWork";
 import Projects from "../components/sections/Projects";
 import Process from "../components/sections/Process";
+import Playground from "../components/sections/Playground";
+import Footer from "../components/sections/Footer";
 
 export default function Home() {
   return (
@@ -11,6 +13,8 @@ export default function Home() {
       <TypesOfWork />
       <Projects />
       <Process />
+      <Playground />
+      <Footer />
     </main>
   );
 }
