@@ -27,13 +27,15 @@ function AnimatedRoutes({ Component, pageProps }) {
   const { transition } = useTransition();
   const customActive = transition !== null;
 
+  // During custom transitions skip mode="wait" — instant exit + simultaneous
+  // mount so the new page can render and run its own enter animation.
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence mode={customActive ? "popLayout" : "wait"}>
       <motion.div
         key={router.asPath}
         initial={customActive ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
-        exit={customActive ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0 }}
+        exit={customActive ? { opacity: 1, transition: { duration: 0 } } : { opacity: 0 }}
         transition={{ duration: 0.3 }}
       >
         <Component {...pageProps} />

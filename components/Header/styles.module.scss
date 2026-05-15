@@ -31,6 +31,7 @@
   z-index: 100;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -117,7 +118,9 @@
 
 .navigation_content {
   position: absolute;
-  top: 10%
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 

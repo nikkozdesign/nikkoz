@@ -10,6 +10,7 @@ export default function Magnetic({ children, strength = 0.4 }) {
   useGSAP(() => {
     const el = ref.current;
     if (!el) return;
+    if (window.matchMedia("(max-width: 768px)").matches) return;
 
     const xTo = gsap.quickTo(el, "x", {
       duration: 1,

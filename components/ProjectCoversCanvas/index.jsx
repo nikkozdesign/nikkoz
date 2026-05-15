@@ -1,14 +1,22 @@
 import { useEffect, useRef } from "react";
+import { useRouter } from "next/router";
 import * as THREE from "three";
 import { gsap } from "gsap";
 import GUI from "lil-gui";
 import { useProjectCovers } from "@/context/ProjectCoversContext";
+import { useTransition } from "@/context/TransitionContext";
+import { projectMorph, EASING_OPTIONS } from "@/lib/transitionConfig";
 
 const VERTEX_SHADER = `
   uniform float uTime;
   uniform float uIntensity;
   uniform float uFrequency;
   uniform float uSpeed;
+  uniform float uExpand;
+  uniform vec2 uTargetMin;
+  uniform vec2 uTargetMax;
+  uniform float uCornerLead; // 0..2 how much corners lead over center
+  uniform float uTwistAngle; // radians — twist applied to local plane space
   varying vec2 vUv;
 
   // Ashima Arts 2D simplex noise (MIT)
@@ -48,18 +56,43 @@ const VERTEX_SHADER = `
     float ny = snoise(noiseCoord + vec2(5.123, 7.456));
     pos.x += nx * uIntensity;
     pos.y += ny * uIntensity;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+
+    // Twist around plane center (PIXI TwistFilter analog): strongest at
+    // center, fades to 0 at corners.
+    float r = length(pos.xy) * 2.0; // 0 at center → ~1.41 at corners
+    float twistFalloff = max(0.0, 1.0 - r);
+    float theta = uTwistAngle * twistFalloff;
+    float ct = cos(theta);
+    float st = sin(theta);
+    pos.xy = vec2(pos.x * ct - pos.y * st, pos.x * st + pos.y * ct);
+
+    // Source world position from the standard mesh transform.
+    vec4 src = modelMatrix * vec4(pos, 1.0);
+    vec2 srcWorld = src.xy;
+
+    // Target world position: each uv corner maps to viewport corner.
+    vec2 targetWorld = mix(uTargetMin, uTargetMax, uv);
+
+    // Per-vertex eased progress; corners lead, center lags.
+    float distFromCenter = length(uv - 0.5) * 2.0; // 0..sqrt(2)
+    float prog = clamp(uExpand * (1.0 + distFromCenter * uCornerLead), 0.0, 1.0);
+    prog = 1.0 - pow(1.0 - prog, 3.0); // cubic out
+
+    vec2 finalWorld = mix(srcWorld, targetWorld, prog);
+
+    gl_Position = projectionMatrix * viewMatrix * vec4(finalWorld, 0.0, 1.0);
   }
 `;
 
 const FRAGMENT_SHADER = `
   uniform sampler2D uTexture;
-  uniform vec2 uSize;
+  uniform vec2 uSize;          // effective plane size (tweened cover -> viewport)
   uniform vec2 uTextureSize;
   uniform float uRadius;
   uniform float uBrightness;
   uniform float uContrast;
   uniform float uGamma;
+  uniform float uOpacity;
   varying vec2 vUv;
 
   float sdRoundedRect(vec2 p, vec2 halfSize, float r) {
@@ -79,7 +112,6 @@ const FRAGMENT_SHADER = `
     vec2 uv = coverUV(vUv, uSize, uTextureSize);
     vec4 color = texture2D(uTexture, uv);
     vec3 rgb = color.rgb;
-
     rgb = pow(rgb, vec3(1.0 / uGamma));
     rgb *= uBrightness;
     rgb = (rgb - 0.5) * uContrast + 0.5;
@@ -89,7 +121,7 @@ const FRAGMENT_SHADER = `
     float dist = sdRoundedRect(pixelPos, halfSize, uRadius);
     float alpha = 1.0 - smoothstep(-1.0, 1.0, dist);
 
-    gl_FragColor = vec4(rgb, color.a * alpha);
+    gl_FragColor = vec4(rgb, color.a * alpha * uOpacity);
   }
 `;
 
@@ -120,6 +152,8 @@ const DEFAULTS = {
 export default function ProjectCoversCanvas() {
   const canvasRef = useRef(null);
   const { covers } = useProjectCovers();
+  const router = useRouter();
+  const { transition, phase, setPhase } = useTransition();
   const sceneState = useRef({
     scene: null,
     camera: null,
@@ -207,6 +241,20 @@ export default function ProjectCoversCanvas() {
       .add(sceneState.current.settings, "speed", 0, 2, 0.05)
       .onChange(updateAllUniforms);
 
+    const morphFolder = gui.addFolder("Project Morph");
+    morphFolder.add(projectMorph, "shaderDuration", 0.3, 3, 0.05);
+    morphFolder.add(projectMorph, "shaderEase", EASING_OPTIONS);
+    morphFolder.add(projectMorph, "wobblePeak", 0, 0.3, 0.005);
+    morphFolder.add(projectMorph, "cornerLead", 0, 2, 0.05).onChange((v) => {
+      sceneState.current.planes.forEach((entry) => {
+        entry.mesh.material.uniforms.uCornerLead.value = v;
+      });
+    });
+    morphFolder.add(projectMorph, "twistPeak", -3, 3, 0.05);
+    morphFolder.add(projectMorph, "pageDuration", 0.3, 2.5, 0.05);
+    morphFolder.add(projectMorph, "pageEase", EASING_OPTIONS);
+    morphFolder.add(projectMorph, "overlap", 0, 1, 0.01);
+
     function updateAllUniforms() {
       const s = sceneState.current.settings;
       sceneState.current.planes.forEach((entry) => {
@@ -234,6 +282,8 @@ export default function ProjectCoversCanvas() {
       sceneState.current.planes.forEach((entry) => {
         entry.mesh.material.uniforms.uRadius.value =
           sceneState.current.radiusPx;
+        entry.mesh.material.uniforms.uTargetMin.value.set(-w / 2, -h / 2);
+        entry.mesh.material.uniforms.uTargetMax.value.set(w / 2, h / 2);
       });
     };
     window.addEventListener("resize", onResize);
@@ -245,6 +295,14 @@ export default function ProjectCoversCanvas() {
       const t = performance.now() / 1000 - state.startTime;
 
       state.planes.forEach((entry) => {
+        const u = entry.mesh.material.uniforms;
+        u.uTime.value = t;
+
+        if (entry.frozen) {
+          // uSize / uSource* were snapshotted at click; do not update.
+          return;
+        }
+
         const el = entry.element;
         if (!el) return;
 
@@ -262,9 +320,7 @@ export default function ProjectCoversCanvas() {
         entry.mesh.scale.set(w, h, 1);
         entry.mesh.rotation.z = getRotationFromTransform(el);
 
-        const u = entry.mesh.material.uniforms;
         u.uSize.value.set(w, h);
-        u.uTime.value = t;
       });
 
       renderer.render(scene, camera);
@@ -298,7 +354,9 @@ export default function ProjectCoversCanvas() {
 
     covers.forEach((cover) => {
       if (planes.has(cover.id)) {
-        planes.get(cover.id).element = cover.element;
+        const existing = planes.get(cover.id);
+        existing.element = cover.element;
+        existing.mesh.material.uniforms.uOpacity.value = 1;
         return;
       }
 
@@ -326,10 +384,26 @@ export default function ProjectCoversCanvas() {
             uBrightness: { value: settings.brightness },
             uContrast: { value: settings.contrast },
             uGamma: { value: settings.gamma },
+            uOpacity: { value: 1 },
             uTime: { value: 0 },
             uIntensity: { value: settings.intensity },
             uFrequency: { value: settings.frequency },
             uSpeed: { value: settings.speed },
+            uExpand: { value: 0 },
+            uTargetMin: {
+              value: new THREE.Vector2(
+                -window.innerWidth / 2,
+                -window.innerHeight / 2
+              ),
+            },
+            uTargetMax: {
+              value: new THREE.Vector2(
+                window.innerWidth / 2,
+                window.innerHeight / 2
+              ),
+            },
+            uCornerLead: { value: projectMorph.cornerLead },
+            uTwistAngle: { value: 0 },
           },
           vertexShader: VERTEX_SHADER,
           fragmentShader: FRAGMENT_SHADER,
@@ -349,6 +423,11 @@ export default function ProjectCoversCanvas() {
     Array.from(planes.keys()).forEach((id) => {
       if (!coverIds.has(id)) {
         const entry = planes.get(id);
+        if (entry.frozen) {
+          // keep mesh alive for transition; element gone is fine
+          entry.element = null;
+          return;
+        }
         scene.remove(entry.mesh);
         entry.mesh.geometry.dispose();
         entry.mesh.material.dispose();
@@ -357,6 +436,139 @@ export default function ProjectCoversCanvas() {
       }
     });
   }, [covers]);
+
+  // Expand active cover to fullscreen + wobble peak on projectMorph transition
+  useEffect(() => {
+    const state = sceneState.current;
+    if (!state.active) return;
+    if (!transition || transition.kind !== "projectMorph") return;
+    if (phase !== "expanding") return;
+
+    const { modifier, href } = transition.payload;
+    const entry = state.planes.get(modifier);
+
+    if (!entry) {
+      // shader plane not available (e.g. mobile or not yet loaded) — fallback
+      router.push(href);
+      setPhase("entering");
+      return;
+    }
+
+    entry.frozen = true;
+    entry.mesh.position.z = 1; // bring active above others
+    const u = entry.mesh.material.uniforms;
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+
+    // Snapshot at click — uSize will tween to viewport during expand.
+    u.uSize.value.set(entry.mesh.scale.x, entry.mesh.scale.y);
+    u.uTargetMin.value.set(-w / 2, -h / 2);
+    u.uTargetMax.value.set(w / 2, h / 2);
+
+    // snapshot config at trigger time so live edits don't desync this run
+    const dur = projectMorph.shaderDuration;
+    const ease = projectMorph.shaderEase;
+    const peak = projectMorph.wobblePeak;
+    const twistPeak = projectMorph.twistPeak;
+    const wobbleSpan = dur * (5 / 6); // wobble ends slightly before fullscreen
+    const overlapAt = dur * projectMorph.overlap;
+
+    // ensure twist starts at 0
+    u.uTwistAngle.value = 0;
+
+    const tweens = [];
+
+    // Expand timeline runs to completion even after phase moves to "entering" —
+    // intentionally not added to cleanup-killed tweens.
+    const tl = gsap.timeline();
+
+    tl.to(u.uExpand, { value: 1, duration: dur, ease }, 0)
+      .to(u.uSize.value, { x: w, y: h, duration: dur, ease }, 0)
+      .to(u.uRadius, { value: 0, duration: dur, ease }, 0)
+      .to(
+        u.uIntensity,
+        { value: peak, duration: wobbleSpan / 2, ease: "power2.out" },
+        0
+      )
+      .to(
+        u.uIntensity,
+        { value: 0, duration: wobbleSpan / 2, ease: "power2.in" },
+        wobbleSpan / 2
+      )
+      // Twist: 0 → peak (at ~30% of expand) → 0 (decays with Power4.easeOut)
+      .to(
+        u.uTwistAngle,
+        { value: twistPeak, duration: dur * 0.3, ease: "power2.out" },
+        0
+      )
+      .to(
+        u.uTwistAngle,
+        { value: 0, duration: dur * 0.7, ease: "power4.out" },
+        dur * 0.3
+      )
+      // Trigger navigation + page slide-up at overlap point of expand
+      .call(
+        () => {
+          setPhase("entering");
+          router.push(href);
+        },
+        null,
+        overlapAt
+      );
+    // NOTE: do not push tl into tweens — it must keep running past phase change
+
+    state.planes.forEach((other, id) => {
+      if (id === modifier) return;
+      const t = gsap.to(other.mesh.material.uniforms.uOpacity, {
+        value: 0,
+        duration: 0.2,
+        ease: "power2.out",
+      });
+      tweens.push(t);
+    });
+
+    return () => {
+      tweens.forEach((t) => t.kill());
+    };
+  }, [phase, transition, router, setPhase]);
+
+  // Hide frozen mesh on signal (fires before z-index drop on enter complete)
+  useEffect(() => {
+    const handler = () => {
+      const state = sceneState.current;
+      if (!state.active) return;
+      state.planes.forEach((entry) => {
+        if (entry.frozen) entry.mesh.visible = false;
+      });
+    };
+    window.addEventListener("projectMorph:hideMesh", handler);
+    return () => window.removeEventListener("projectMorph:hideMesh", handler);
+  }, []);
+
+  // Cleanup frozen mesh + reset opacities on transition complete
+  useEffect(() => {
+    const state = sceneState.current;
+    if (!state.active) return;
+    if (phase !== null) return;
+
+    const toDelete = [];
+    state.planes.forEach((entry, id) => {
+      if (entry.frozen) {
+        state.scene.remove(entry.mesh);
+        entry.mesh.geometry.dispose();
+        entry.mesh.material.dispose();
+        entry.texture.dispose();
+        toDelete.push(id);
+      } else {
+        const u = entry.mesh.material.uniforms;
+        u.uOpacity.value = 1;
+        u.uRadius.value = state.radiusPx;
+        u.uExpand.value = 0;
+        u.uTwistAngle.value = 0;
+      }
+    });
+    toDelete.forEach((id) => state.planes.delete(id));
+  }, [phase]);
 
   return (
     <canvas

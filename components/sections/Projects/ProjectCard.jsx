@@ -1,8 +1,10 @@
 import { useEffect, useRef } from "react";
+import { useRouter } from "next/router";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useProjectCovers } from "@/context/ProjectCoversContext";
+import { useTransition } from "@/context/TransitionContext";
 import styles from "./styles.module.scss";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
@@ -35,17 +37,32 @@ export default function ProjectCard({
   const cardRef = useRef(null);
   const coverRef = useRef(null);
 
-  const projectCovers = useProjectCovers();
+  const { registerCover } = useProjectCovers() ?? {};
+  const router = useRouter();
+  const { start } = useTransition();
+
+  const handleCoverClick = (e) => {
+    e.preventDefault();
+    const href = `/work/${modifier}`;
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia("(max-width: 768px)").matches
+    ) {
+      router.push(href);
+      return;
+    }
+    start("projectMorph", { modifier, href });
+  };
 
   useEffect(() => {
-    if (!projectCovers || !coverRef.current) return;
-    const unregister = projectCovers.registerCover({
+    if (!registerCover || !coverRef.current) return;
+    const unregister = registerCover({
       id: modifier,
       src: cover,
       element: coverRef.current,
     });
     return unregister;
-  }, [projectCovers, modifier, cover]);
+  }, [registerCover, modifier, cover]);
 
   useGSAP(
     () => {
@@ -121,7 +138,14 @@ export default function ProjectCard({
           </h2>
         )}
       </div>
-      <div ref={coverRef} className={styles.project_card__cover}>
+      <div
+        ref={coverRef}
+        className={styles.project_card__cover}
+        onClick={handleCoverClick}
+        role="link"
+        tabIndex={0}
+        style={{ cursor: "pointer" }}
+      >
         <img
           className={styles.project_card__video}
           src={cover}

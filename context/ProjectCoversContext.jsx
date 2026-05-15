@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useContext, useMemo, useState, useCallback } from "react";
 
 const ProjectCoversContext = createContext(null);
 
@@ -21,8 +21,13 @@ export function ProjectCoversProvider({ children }) {
     };
   }, []);
 
+  const value = useMemo(
+    () => ({ covers, registerCover }),
+    [covers, registerCover]
+  );
+
   return (
-    <ProjectCoversContext.Provider value={{ covers, registerCover }}>
+    <ProjectCoversContext.Provider value={value}>
       {children}
     </ProjectCoversContext.Provider>
   );

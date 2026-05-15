@@ -29,6 +29,10 @@ export default function Header() {
   };
 
   const handleLogoClick = () => {
+    if (!isHome) {
+      router.push("/");
+      return;
+    }
     if (lenis) {
       lenis.scrollTo(0);
     } else {
@@ -121,7 +125,7 @@ export default function Header() {
         buildTimeline(0.186, { fadeMoodText: true });
       });
     },
-    { dependencies: [isHome] }
+    { dependencies: [isHome], revertOnUpdate: true }
   );
 
   return (
