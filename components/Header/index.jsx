@@ -19,7 +19,9 @@ export default function Header() {
   const handleWorkClick = () => {
     const target = document.querySelector("#projects");
     if (!target) return;
-    const offset = window.innerHeight;
+    // Pinned section maps vertical px → horizontal px 1:1. Half a viewport
+    // advance past the intro spacer lands the first card in view.
+    const offset = window.innerWidth * 0.5;
     if (lenis) {
       lenis.scrollTo(target, { offset });
     } else {

@@ -1,7 +1,8 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { useLightSection } from "@/hooks/useLightSection";
+import { useLenis } from "@/context/LenisContext";
 import { useTransition } from "@/context/TransitionContext";
 import { projectMorph } from "@/lib/transitionConfig";
 import FlipLink from "@/components/FlipLink";
@@ -15,6 +16,15 @@ export default function ProjectDetail({ project }) {
   useLightSection(ref);
 
   const { transition, complete } = useTransition();
+  const lenis = useLenis();
+
+  // Scroll to top on mount — Next router scroll restoration + Lenis state can
+  // otherwise leave the new page at the previous page's scroll position.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (lenis) lenis.scrollTo(0, { immediate: true });
+    else window.scrollTo(0, 0);
+  }, [lenis]);
 
   useGSAP(
     () => {
@@ -34,9 +44,10 @@ export default function ProjectDetail({ project }) {
           duration: projectMorph.pageDuration,
           ease: projectMorph.pageEase,
           onComplete: () => {
-            // Hide frozen shader mesh BEFORE dropping z-index so it can't flash
-            // through during the gap between z change and async dispose.
+            // Hide frozen shader mesh + clear canvas tint BEFORE dropping
+            // z-index so neither bleeds through during the React commit gap.
             window.dispatchEvent(new CustomEvent("projectMorph:hideMesh"));
+            window.dispatchEvent(new CustomEvent("projectMorph:resetCanvas"));
             if (ref.current) ref.current.style.zIndex = "";
             complete();
           },
@@ -58,32 +69,60 @@ export default function ProjectDetail({ project }) {
             {detail.title}
           </h1>
 
-          {detail.text1 && (
-            <p className={`${styles.project_detail__text1} sigurd-54 dark`}>
-              {detail.text1}
-            </p>
-          )}
+          <div className={styles.project_detail__texts}>
+            {detail.text1 && (
+              <p className={`${styles.project_detail__text1} sigurd-54 dark`}>
+                {detail.text1}
+              </p>
+            )}
 
-          {detail.text2 && (
-            <p className={`${styles.project_detail__text2} geist-22 dark`}>
-              {detail.text2}
-            </p>
-          )}
+            {detail.text2 && (
+              <p className={`${styles.project_detail__text2} geist-22 dark`}>
+                {detail.text2}
+              </p>
+            )}
+          </div>
 
           {detail.email && (
-            <div className={styles.project_detail__email}>
-              <FlipLink
-                href={`mailto:${detail.email}`}
-                className="sigurd-46 italic dark"
-              >
-                {detail.email}
-              </FlipLink>
+            <div className={styles.project_detail__email_row}>
+              <span className={`sigurd-32 italic dark`}>☞</span>
+              <span className={styles.project_detail__email}>
+                <FlipLink
+                  href={`mailto:${detail.email}`}
+                  className="sigurd-32 italic dark"
+                >
+                  {detail.email}
+                </FlipLink>
+              </span>
+              {detail.caseStudyUrl && (
+                <span className={styles.project_detail__case_study}>
+                  <FlipLink
+                    href={detail.caseStudyUrl}
+                    target="_blank"
+                    className="sigurd-32 italic dark"
+                  >
+                    view full case study
+                  </FlipLink>
+                </span>
+              )}
             </div>
           )}
         </div>
 
         <div className={styles.project_detail__right}>
-          <ProjectCarousel images={detail.images} />
+          <div className={styles.project_detail__carousel}>
+            <ProjectCarousel images={detail.images} />
+          </div>
+          <div className={styles.project_detail__images_mobile}>
+            {(detail.images || []).map((src, i) => (
+              <img
+                key={i}
+                src={src}
+                alt=""
+                className={styles.project_detail__mobile_img}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </article>

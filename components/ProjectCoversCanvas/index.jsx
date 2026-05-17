@@ -532,6 +532,18 @@ export default function ProjectCoversCanvas() {
     };
   }, [phase, transition, router, setPhase]);
 
+  // Opaque-black canvas during projectMorph so the green ShaderBackground
+  // doesn't bleed through around the expanding mesh.
+  useEffect(() => {
+    const state = sceneState.current;
+    if (!state.active || !state.renderer) return;
+    if (transition?.kind === "projectMorph") {
+      state.renderer.setClearColor(0xf5f5f5, 1);
+    } else {
+      state.renderer.setClearColor(0x000000, 0);
+    }
+  }, [transition]);
+
   // Hide frozen mesh on signal (fires before z-index drop on enter complete)
   useEffect(() => {
     const handler = () => {
@@ -543,6 +555,17 @@ export default function ProjectCoversCanvas() {
     };
     window.addEventListener("projectMorph:hideMesh", handler);
     return () => window.removeEventListener("projectMorph:hideMesh", handler);
+  }, []);
+
+  // Reset clearColor synchronously alongside hideMesh so the white canvas
+  // tint doesn't outlive the slide-up completion.
+  useEffect(() => {
+    const handler = () => {
+      const state = sceneState.current;
+      if (state.renderer) state.renderer.setClearColor(0x000000, 0);
+    };
+    window.addEventListener("projectMorph:resetCanvas", handler);
+    return () => window.removeEventListener("projectMorph:resetCanvas", handler);
   }, []);
 
   // Cleanup frozen mesh + reset opacities on transition complete

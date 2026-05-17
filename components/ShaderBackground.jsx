@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/router";
 import * as THREE from "three";
 import { useShaderPalette } from "../context/ShaderPaletteContext";
 
@@ -59,6 +60,22 @@ const KERNEL_PRESETS = [
 ];
 
 export default function ShaderBackground({ embed = false, debug = false }) {
+  const router = useRouter();
+  const [routing, setRouting] = useState(false);
+
+  useEffect(() => {
+    if (embed) return;
+    const onStart = () => setRouting(true);
+    const onDone = () => setRouting(false);
+    router.events.on("routeChangeStart", onStart);
+    router.events.on("routeChangeComplete", onDone);
+    router.events.on("routeChangeError", onDone);
+    return () => {
+      router.events.off("routeChangeStart", onStart);
+      router.events.off("routeChangeComplete", onDone);
+      router.events.off("routeChangeError", onDone);
+    };
+  }, [router, embed]);
   const canvasRef = useRef(null);
   const handlesRef = useRef(null);
   const [showUi, setShowUi] = useState(true);
@@ -574,6 +591,8 @@ export default function ShaderBackground({ embed = false, debug = false }) {
                 position: "fixed", top: 0, left: 0,
                 width: "100vw", height: "100vh",
                 zIndex: -1, pointerEvents: "none",
+                opacity: routing ? 0 : 1,
+                transition: "opacity 0.2s ease",
               }
         }
       />
