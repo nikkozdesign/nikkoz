@@ -48,10 +48,11 @@
 }
 
 @media (max-width: 768px) {
-  .header { 
+  .header {
     padding-top: vwm(20);
     padding-right: vwm(12);
     padding-left: vwm(12);
+    padding-bottom: vwm(20);
   }
 }
 
@@ -121,6 +122,9 @@
   top: 10%;
   left: 50%;
   transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 
