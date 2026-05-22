@@ -1,7 +1,8 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "@/context/LenisContext";
 import { useShaderPalette } from "@/context/ShaderPaletteContext";
 import Magnetic from "@/components/Magnetic";
@@ -15,6 +16,18 @@ export default function Header() {
 
   const headerRef = useRef(null);
   const logoRef = useRef(null);
+
+  // iOS Safari URL bar collapse changes dvh mid-scroll. window 'resize' is
+  // unreliable for this; visualViewport.resize fires consistently. Refresh
+  // ScrollTrigger so yToNav (offset-based) recalculates.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const onResize = () => ScrollTrigger.refresh();
+    vv.addEventListener("resize", onResize);
+    return () => vv.removeEventListener("resize", onResize);
+  }, []);
 
   const handleWorkClick = () => {
     const target = document.querySelector("#projects");

@@ -88,6 +88,9 @@
     padding: vwm(50) vwm(16) vwm(60);
     height: auto;
     overflow: visible;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    width: 100%;
   }
 
   .project_detail__inner {
@@ -141,7 +144,10 @@
     position: relative;
     bottom: auto;
     margin-top: vwm(40);
-    gap: vwm(20);
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: vwm(16) vwm(20);
   }
 
   .project_detail__right {

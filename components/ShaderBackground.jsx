@@ -61,21 +61,11 @@ const KERNEL_PRESETS = [
 
 export default function ShaderBackground({ embed = false, debug = false }) {
   const router = useRouter();
-  const [routing, setRouting] = useState(false);
-
-  useEffect(() => {
-    if (embed) return;
-    const onStart = () => setRouting(true);
-    const onDone = () => setRouting(false);
-    router.events.on("routeChangeStart", onStart);
-    router.events.on("routeChangeComplete", onDone);
-    router.events.on("routeChangeError", onDone);
-    return () => {
-      router.events.off("routeChangeStart", onStart);
-      router.events.off("routeChangeComplete", onDone);
-      router.events.off("routeChangeError", onDone);
-    };
-  }, [router, embed]);
+  // Hide shader on any non-home route so it never bleeds through the
+  // page cross-fade. Pathname flips early in the navigation cycle, before
+  // the exit animation, so the shader is already gone when the old page
+  // starts becoming transparent.
+  const showShader = embed || router.pathname === "/";
   const canvasRef = useRef(null);
   const handlesRef = useRef(null);
   const [showUi, setShowUi] = useState(true);
@@ -591,8 +581,10 @@ export default function ShaderBackground({ embed = false, debug = false }) {
                 position: "fixed", top: 0, left: 0,
                 width: "100vw", height: "100vh",
                 zIndex: -1, pointerEvents: "none",
-                opacity: routing ? 0 : 1,
-                transition: "opacity 0.2s ease",
+                opacity: showShader ? 1 : 0,
+                transition: showShader
+                  ? "opacity 0.3s ease"
+                  : "opacity 0.05s linear",
               }
         }
       />

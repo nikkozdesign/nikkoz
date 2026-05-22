@@ -94,8 +94,8 @@ export default function ProjectCard({
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: cardRef.current,
-            start: "top 80%",
-            end: "bottom top",
+            start: "top center",
+            end: "bottom center",
             scrub: true,
             invalidateOnRefresh: true,
           },
@@ -103,7 +103,7 @@ export default function ProjectCard({
 
         tl.set(coverRef.current, { x: "100vw", y: "-25%", rotate: -40 }).to(
           coverRef.current,
-          { rotate: 40, y: "-15%", x: "-100vw" }
+          { rotate: 40, y: "-15%", x: "-100vw", ease: "none" }
         );
       });
     },
@@ -118,7 +118,14 @@ export default function ProjectCard({
   }`;
 
   return (
-    <div ref={cardRef} className={styles.project_card}>
+    <div
+      ref={cardRef}
+      className={styles.project_card}
+      onClick={handleCoverClick}
+      role="link"
+      tabIndex={0}
+      style={{ cursor: "pointer" }}
+    >
       {name1 && (
         <div className={topLineClass}>
           <h2 className={`${styles.project_card__name} sigurd-388 dark`}>
@@ -138,14 +145,7 @@ export default function ProjectCard({
           </h2>
         )}
       </div>
-      <div
-        ref={coverRef}
-        className={styles.project_card__cover}
-        onClick={handleCoverClick}
-        role="link"
-        tabIndex={0}
-        style={{ cursor: "pointer" }}
-      >
+      <div ref={coverRef} className={styles.project_card__cover}>
         <img
           className={styles.project_card__video}
           src={cover}
